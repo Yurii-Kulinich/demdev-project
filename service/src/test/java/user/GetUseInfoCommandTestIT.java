@@ -1,14 +1,13 @@
 package user;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-public class GetUseInfoCommandTestIT {
+class GetUseInfoCommandTestIT {
 
   @Test
-  public void getUserBmi() {
+  void getUserBmi() {
     assertTrue(true);
   }
 }

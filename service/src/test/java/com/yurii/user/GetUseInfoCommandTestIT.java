@@ -1,4 +1,4 @@
-package user;
+package com.yurii.user;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

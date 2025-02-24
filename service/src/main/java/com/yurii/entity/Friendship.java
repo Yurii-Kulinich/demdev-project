@@ -1,12 +1,13 @@
-package entity;
+package com.yurii.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -24,13 +25,27 @@ public class Friendship {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
-  @Column(name = "user1_id")
-  private UUID user1Id;
-  @Column(name = "user2_id")
-  private UUID user2Id;
+
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "user_id")
+  private User user;
+
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "friend_id")
+  private User friend;
+
   @Enumerated(EnumType.STRING)
   private Status status;
   private Instant createdAt;
   private Instant updatedAt;
 
+  public void setUser(User user) {
+    this.user = user;
+    user.getInitiatedFriendships().add(this);
+  }
+
+  public void setFriend(User friend) {
+    this.friend = friend;
+    friend.getFriendshipsAsFriend().add(this);
+  }
 }

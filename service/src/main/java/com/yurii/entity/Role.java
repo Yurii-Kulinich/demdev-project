@@ -1,4 +1,4 @@
-package entity;
+package com.yurii.entity;
 
 public enum Role {
   ADMIN,

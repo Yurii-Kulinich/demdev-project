@@ -29,6 +29,14 @@
       <artifactId>lombok</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.yurii</groupId>
       <artifactId>common</artifactId>
       <version>1.0-SNAPSHOT</version>
@@ -52,8 +60,6 @@
       </plugin>
     </plugins>
   </build>
-
-
 
 
 </project>

@@ -1,7 +1,7 @@
 package com.yurii.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,7 +19,7 @@ import lombok.ToString;
 @Entity
 @Data
 @ToString(exclude = {"user", "post"})
-@EqualsAndHashCode(exclude = {"user", "post"})
+@EqualsAndHashCode()
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -30,9 +30,9 @@ public class Like {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private User user;
-  @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private Post post;
   private Instant createdAt;
 

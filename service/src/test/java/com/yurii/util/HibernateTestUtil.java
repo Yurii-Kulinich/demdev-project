@@ -4,19 +4,11 @@ import lombok.experimental.UtilityClass;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
 
 @UtilityClass
 public class HibernateTestUtil {
 
-  private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17")
-      .waitingFor(Wait.forListeningPort());
-
-  private static final SessionFactory SESSION_FACTORY = buildSessionFactory();
-
-  public static SessionFactory getSessionFactory() {
-    return SESSION_FACTORY;
-  }
+  private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13");
 
   static {
     postgres.start();
@@ -28,6 +20,7 @@ public class HibernateTestUtil {
     configuration.setProperty("hibernate.connection.username", postgres.getUsername());
     configuration.setProperty("hibernate.connection.password", postgres.getPassword());
     configuration.configure();
+
     return configuration.buildSessionFactory();
   }
 }

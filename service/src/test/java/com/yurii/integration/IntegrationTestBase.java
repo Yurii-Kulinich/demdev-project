@@ -1,6 +1,6 @@
 package com.yurii.integration;
 
-import com.yurii.util.HibernateUtil;
+import com.yurii.util.HibernateTestUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -17,13 +17,13 @@ public abstract class IntegrationTestBase {
 
   @BeforeAll
   static void setUpSessionFactory() {
-    sessionFactory = HibernateUtil.getSessionFactory();
+    sessionFactory = HibernateTestUtil.buildSessionFactory();
   }
 
   @BeforeEach
   void startTransaction() {
     session = sessionFactory.openSession();
-    transaction = session.beginTransaction();
+    session.beginTransaction();
   }
 
   @AfterEach

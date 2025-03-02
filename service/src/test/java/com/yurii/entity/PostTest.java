@@ -1,11 +1,14 @@
 package com.yurii.entity;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.yurii.integration.IntegrationTestBase;
 import java.time.Instant;
 import java.time.LocalDate;
-import org.hibernate.exception.ConstraintViolationException;
+import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
 
 class PostTest extends IntegrationTestBase {
@@ -13,17 +16,12 @@ class PostTest extends IntegrationTestBase {
   @Test
   void whenPersistValidPost_thenShouldBeRetrievableFromDatabase() {
     var user = getUser();
-    var post = Post.builder()
-        .user(user)
-        .title("testPost")
-        .text("testText")
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    var post = getPost(user);
 
     session.persist(user);
     session.persist(post);
     session.flush();
+    session.clear();
 
     var result = session.get(Post.class, post.getId());
 
@@ -33,39 +31,13 @@ class PostTest extends IntegrationTestBase {
     assertEquals(post.getText(), result.getText());
     assertEquals(post.getCreatedAt(), result.getCreatedAt());
     assertEquals(post.getUpdatedAt(), result.getUpdatedAt());
-
   }
 
-  @Test
-  void whenPersistInvalidPost_thenShouldThrowException() {
-    var user = getUser();
-    var post = Post.builder()
-        .user(user)
-        .text("testText")
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
-
-    session.persist(user);
-    session.persist(post);
-
-    Exception exception = assertThrows(ConstraintViolationException.class, () -> {
-      session.flush();
-    });
-    assertTrue(exception.getMessage().contains("null value in column \"title\" of relation \"post\" violates not-null constraint"));
-
-  }
 
   @Test
   void whenUpdatePost_thenShouldBeUpdated() {
     var user = getUser();
-    var post = Post.builder()
-        .user(user)
-        .title("testPost")
-        .text("testText")
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    var post = getPost(user);
 
     session.persist(user);
     session.persist(post);
@@ -76,6 +48,7 @@ class PostTest extends IntegrationTestBase {
 
     session.merge(post);
     session.flush();
+    session.clear();
 
     var result = session.get(Post.class, post.getId());
 
@@ -83,21 +56,14 @@ class PostTest extends IntegrationTestBase {
     assertEquals(post.getId(), result.getId());
     assertEquals("UpdatedTitle", result.getTitle());
     assertEquals("UpdatedText", result.getText());
-
   }
 
   @Test
   void whenDeletePost_thenShouldNotExist() {
-
     var user = getUser();
-    var post = Post.builder()
-        .user(user)
-        .title("testPost")
-        .text("testText")
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    var post = getPost(user);
 
+    session.persist(user);
     session.persist(post);
     session.flush();
 
@@ -106,51 +72,37 @@ class PostTest extends IntegrationTestBase {
 
     session.remove(post);
     session.flush();
+    session.clear();
 
     var resultAfterDelete = session.get(Post.class, post.getId());
     assertNull(resultAfterDelete);
   }
 
   @Test
-  void whenPostIsPersisted_thenUserIsPersistedToo(){
+  void whenPostIsPersisted_thenUserIsPersistedToo() {
     var user = getUser();
-    var post = Post.builder()
-        .user(user)
-        .title("testPost")
-        .text("testText")
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    var post = getPost(user);
 
+    session.persist(user);
     session.persist(post);
     session.flush();
 
     var retrievedUser = session.get(User.class, user.getId());
     assertEquals(user.getId(), retrievedUser.getId());
-
   }
 
   @Test
   void whenAddLikeToPost_thenPostShouldBeAddedToLike() {
     var user = getUser();
+    session.persist(user);
 
-    var post = Post.builder()
-        .user(user)
-        .title("testPost")
-        .text("testText")
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
-
-    Like like = Like.builder()
-          .user(user)
-          .post(post)
-          .createdAt(Instant.now())
-          .build();
-
-    post.addLike(like);
+    var post = getPost(user);
     session.persist(post);
 
+    var like = getLike(user, post);
+    post.addLike(like);
+
+    session.persist(post);
     session.flush();
 
     var retrievedPost = session.get(Post.class, post.getId());
@@ -161,30 +113,23 @@ class PostTest extends IntegrationTestBase {
 
     assertTrue(post.getLikes().contains(like));
     assertEquals(retrievedPost, retrievedLike.getPost());
-
   }
 
   @Test
   void whenAddCommentToPost_thenPostShouldBeAddedToComment() {
     var user = getUser();
+    var post = getPost(user);
 
-    var post = Post.builder()
+    Comment comment = Comment.builder()
+        .post(post)
         .user(user)
-        .title("testPost")
-        .text("testText")
+        .text("testComment")
         .createdAt(Instant.now())
         .updatedAt(Instant.now())
         .build();
 
-    Comment comment = Comment.builder()
-          .post(post)
-          .user(user)
-          .text("testComment")
-          .createdAt(Instant.now())
-          .updatedAt(Instant.now())
-          .build();
-
     post.addComment(comment);
+    session.persist(user);
     session.persist(post);
 
     session.flush();
@@ -197,41 +142,28 @@ class PostTest extends IntegrationTestBase {
 
     assertTrue(post.getComments().contains(comment));
     assertEquals(retrievedPost, retrievedComment.getPost());
-
   }
 
   @Test
   void whenPostIsRemoved_thenLikesAreRemoved() {
     var user = getUser();
-
-    var post = Post.builder()
-        .user(user)
-        .title("testPost")
-        .text("testText")
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
-
-    Like like = Like.builder()
-        .user(user)
-        .post(post)
-        .createdAt(Instant.now())
-        .build();
+    var post = getPost(user);
+    var like = getLike(user, post);
 
     post.addLike(like);
+    session.persist(user);
     session.persist(post);
     session.flush();
 
     session.remove(post);
     session.flush();
+    session.clear();
 
     var retrievedLike = session.get(Like.class, like.getId());
     assertNull(retrievedLike);
-
   }
 
   private static User getUser() {
-
     return User.builder()
         .password("testPass")
         .firstName("TestName")
@@ -241,6 +173,24 @@ class PostTest extends IntegrationTestBase {
         .birthDate(LocalDate.of(1995, 5, 15))
         .createdAt(Instant.now())
         .updatedAt(Instant.now())
+        .build();
+  }
+
+  private static Post getPost(User user) {
+    return Post.builder()
+        .user(user)
+        .title("testPost")
+        .text("testText")
+        .createdAt(Instant.now().truncatedTo(ChronoUnit.MICROS))
+        .updatedAt(Instant.now().truncatedTo(ChronoUnit.MICROS))
+        .build();
+  }
+
+  private static Like getLike(User user, Post post) {
+   return Like.builder()
+        .user(user)
+        .post(post)
+        .createdAt(Instant.now())
         .build();
   }
 

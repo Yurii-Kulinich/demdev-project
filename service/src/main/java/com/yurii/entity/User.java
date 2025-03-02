@@ -78,17 +78,13 @@ public class User {
   }
 
   public void addInitiatedFriendship(Friendship friendship) {
-    if (!initiatedFriendships.contains(friendship) && !friendshipsAsFriend.contains(friendship)) {
       initiatedFriendships.add(friendship);
       friendship.setUser(this);
-    }
   }
 
   public void addFriendshipAsFriend(Friendship friendship) {
-    if (!friendshipsAsFriend.contains(friendship) && !initiatedFriendships.contains(friendship)) {
       friendshipsAsFriend.add(friendship);
       friendship.setFriend(this);
-    }
   }
 
   public void addLike(Like like) {

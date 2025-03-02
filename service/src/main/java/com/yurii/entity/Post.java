@@ -2,10 +2,10 @@ package com.yurii.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -25,7 +25,7 @@ import lombok.ToString;
 @ToString(exclude = {"user", "likes", "comments"})
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"user", "likes", "comments"})
+@EqualsAndHashCode(exclude = {"likes", "comments"})
 @Builder
 @Table(name = "post")
 public class Post {
@@ -39,7 +39,7 @@ public class Post {
   private Instant createdAt;
   private Instant updatedAt;
 
-  @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private User user;
 
   @Builder.Default

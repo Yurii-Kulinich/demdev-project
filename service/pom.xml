@@ -17,8 +17,22 @@
       <artifactId>junit-jupiter-engine</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
+    </dependency><dependency>
+    <groupId>org.hibernate.orm</groupId>
+    <artifactId>hibernate-jpamodelgen</artifactId>
+  </dependency>
+    <!-- querydsl jpa requires 2 dependencies -->
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+      <version>${querydsl.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-jpa</artifactId>
+      <version>5.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>

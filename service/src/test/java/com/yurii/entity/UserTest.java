@@ -15,16 +15,7 @@ class UserTest extends IntegrationTestBase {
 
   @Test
   void whenPersistValidUser_thenShouldBeRetrievableFromDatabase() {
-    User user = User.builder()
-        .password("testPass")
-        .firstName("TestName")
-        .lastName("TestLast")
-        .email("test@example.com")
-        .role(Role.USER)
-        .birthDate(LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    User user = getUser("test@mail.com");
 
     session.persist(user);
     session.flush();
@@ -36,7 +27,7 @@ class UserTest extends IntegrationTestBase {
 
     assertEquals("TestName", retrievedUser.getFirstName());
     assertEquals("TestLast", retrievedUser.getLastName());
-    assertEquals("test@example.com", retrievedUser.getEmail());
+    assertEquals("test@mail.com", retrievedUser.getEmail());
     assertEquals(user.getRole(), retrievedUser.getRole());
     assertEquals(user.getBirthDate(), retrievedUser.getBirthDate());
 
@@ -44,16 +35,7 @@ class UserTest extends IntegrationTestBase {
 
   @Test
   void whenUpdateUser_thenShouldReflectChanges() {
-    User user = User.builder()
-        .password("testPass")
-        .firstName("TestName")
-        .lastName("TestLast")
-        .email("test@example.com")
-        .role(Role.USER)
-        .birthDate(LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    User user = getUser("test@mail.com");
 
     session.persist(user);
     session.flush();
@@ -72,16 +54,7 @@ class UserTest extends IntegrationTestBase {
 
   @Test
   void whenDeleteUser_thenShouldNotExist() {
-    User user = User.builder()
-        .password("testPass")
-        .firstName("TestName")
-        .lastName("TestLast")
-        .email("test@example.com")
-        .role(Role.USER)
-        .birthDate(LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    User user = getUser("test@mail.com");
 
     session.persist(user);
     session.flush();
@@ -98,16 +71,7 @@ class UserTest extends IntegrationTestBase {
 
   @Test
   void whenUserIsPersisted_thenPostIsPersistedToo() {
-    User user = User.builder()
-        .password("testPass")
-        .firstName("TestName")
-        .lastName("TestLast")
-        .email("test@example.com")
-        .role(Role.USER)
-        .birthDate(LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    User user = getUser("test@mail.com");
 
     Post post = Post.builder()
         .user(user)
@@ -130,16 +94,7 @@ class UserTest extends IntegrationTestBase {
 
   @Test
   void whenPostIsAddedToUser_thenUserIsSetInPost() {
-    User user = User.builder()
-        .password("testPass")
-        .firstName("TestName")
-        .lastName("TestLast")
-        .email("test@example.com")
-        .role(Role.USER)
-        .birthDate(LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    User user = getUser("test@mail.com");
 
     Post post = Post.builder()
         .user(user)
@@ -162,26 +117,8 @@ class UserTest extends IntegrationTestBase {
 
   @Test
   void whenCreateFriendship_thenItIsPersistedCorrectly() {
-    User user1 = User.builder()
-        .password("testPass")
-        .firstName("TestName")
-        .lastName("TestLast")
-        .email("test@example.com")
-        .role(Role.USER)
-        .birthDate(LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
-    User user2 = User.builder()
-        .password("testPass1")
-        .firstName("TestName1")
-        .lastName("TestLast1")
-        .email("test1@example.com")
-        .role(Role.USER)
-        .birthDate(LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    User user1 = getUser("test1@mail.com");
+    User user2 = getUser("test2@mail.com");
     session.persist(user1);
     session.persist(user2);
 
@@ -213,6 +150,19 @@ class UserTest extends IntegrationTestBase {
     User user = session.get(User.class, UUID.randomUUID());
 
     assertNull(user);
+  }
+
+  private static User getUser(String email){
+    return User.builder()
+        .password("testPass")
+        .firstName("TestName")
+        .lastName("TestLast")
+        .email(email)
+        .role(Role.USER)
+        .birthDate(LocalDate.of(1995, 5, 15))
+        .createdAt(Instant.now())
+        .updatedAt(Instant.now())
+        .build();
   }
 
 }

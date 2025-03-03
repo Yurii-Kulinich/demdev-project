@@ -5,13 +5,97 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.yurii.dao.UserDao;
+import com.yurii.dao.UserFilter;
 import com.yurii.integration.IntegrationTestBase;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class UserTest extends IntegrationTestBase {
+
+  private final UserDao userDao = UserDao.getInstance();
+
+  @Test
+  void findByFirstNameAndFriendshipsNumber() {
+    User user = getUser("mainuser@mail.com");
+    User friend1 = getUser("firend1user@mail.com");
+    User friend2 = getUser("firend2user@mail.com");
+
+    session.persist(user);
+    session.persist(friend1);
+    session.persist(friend2);
+
+    session.flush();
+
+    Friendship friendship1 = Friendship.builder()
+        .user(user)
+        .friend(friend1)
+        .build();
+    Friendship friendship2 = Friendship.builder()
+        .user(user)
+        .friend(friend2)
+        .build();
+
+    UserFilter filter = UserFilter.builder()
+        .email("mainuser@mail.com")
+        .friendsNumber(1)
+        .build();
+
+    session.persist(friendship1);
+    session.persist(friendship2);
+    session.flush();
+    session.clear();
+
+    List<User> result = userDao.findAllByFirstNameAndFriendsNumber(session, filter);
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    assertEquals(2, result.get(0).getInitiatedFriendships().size());
+    assertEquals(user.getEmail(), result.get(0).getEmail());
+  }
+
+  @Test
+  void findAveragePostLengthByEmailAndFriendsNumber(){
+    User user = getUser("mainuser@mail.com");
+    User friend1 = getUser("firend1user@mail.com");
+    User friend2 = getUser("firend2user@mail.com");
+    Post post = getPost(user);
+
+    session.persist(user);
+    session.persist(friend1);
+    session.persist(friend2);
+    session.persist(post);
+
+    session.flush();
+
+    Friendship friendship1 = Friendship.builder()
+        .user(user)
+        .friend(friend1)
+        .build();
+    Friendship friendship2 = Friendship.builder()
+        .user(user)
+        .friend(friend2)
+        .build();
+
+    UserFilter filter = UserFilter.builder()
+        .email("mainuser@mail.com")
+        .friendsNumber(1)
+        .build();
+
+    session.persist(friendship1);
+    session.persist(friendship2);
+    session.flush();
+    session.clear();
+
+
+    var result = userDao.findAveragePostLengthByEmailAndFriendsNumber(session, filter);
+
+    assertNotNull(result);
+    assertEquals(8, result);
+  }
 
   @Test
   void whenPersistValidUser_thenShouldBeRetrievableFromDatabase() {
@@ -152,7 +236,7 @@ class UserTest extends IntegrationTestBase {
     assertNull(user);
   }
 
-  private static User getUser(String email){
+  private static User getUser(String email) {
     return User.builder()
         .password("testPass")
         .firstName("TestName")
@@ -162,6 +246,16 @@ class UserTest extends IntegrationTestBase {
         .birthDate(LocalDate.of(1995, 5, 15))
         .createdAt(Instant.now())
         .updatedAt(Instant.now())
+        .build();
+  }
+
+  private static Post getPost(User user) {
+    return Post.builder()
+        .user(user)
+        .title("testPost")
+        .text("testText")
+        .createdAt(Instant.now().truncatedTo(ChronoUnit.MICROS))
+        .updatedAt(Instant.now().truncatedTo(ChronoUnit.MICROS))
         .build();
   }
 

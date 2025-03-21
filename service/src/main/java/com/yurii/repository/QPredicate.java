@@ -1,4 +1,4 @@
-package com.yurii.dao;
+package com.yurii.repository;
 
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;

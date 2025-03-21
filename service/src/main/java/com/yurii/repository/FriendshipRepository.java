@@ -1,4 +1,4 @@
-package com.yurii.dao;
+package com.yurii.repository;
 
 import com.yurii.entity.Friendship;
 import jakarta.persistence.EntityManager;

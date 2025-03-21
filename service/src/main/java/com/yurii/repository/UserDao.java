@@ -1,4 +1,4 @@
-package com.yurii.dao;
+package com.yurii.repository;
 
 import static com.yurii.entity.QFriendship.friendship;
 import static com.yurii.entity.QUser.user;

@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.yurii.dao.UserDao;
-import com.yurii.dao.UserFilter;
+import com.yurii.repository.UserDao;
+import com.yurii.repository.UserFilter;
 import com.yurii.integration.IntegrationTestBase;
 import java.time.Instant;
 import java.time.LocalDate;

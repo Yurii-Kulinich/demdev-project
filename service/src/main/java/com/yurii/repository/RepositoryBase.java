@@ -1,4 +1,4 @@
-package com.yurii.dao;
+package com.yurii.repository;
 
 import jakarta.persistence.EntityManager;
 import java.io.Serializable;
@@ -19,12 +19,10 @@ public abstract class RepositoryBase<K extends Serializable, E> implements Repos
   }
 
   @Override
-  public void delete(K id) {
-    E entity = entityManager.find(clazz, id);
+  public void delete(E entity) {
     if (entity != null) {
-      entityManager.remove(entityManager.find(clazz, id));
+      entityManager.remove(entity);
     }
-
   }
 
   @Override

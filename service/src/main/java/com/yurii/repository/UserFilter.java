@@ -1,4 +1,4 @@
-package com.yurii.dao;
+package com.yurii.repository;
 
 import lombok.Builder;
 import lombok.Value;

@@ -2,6 +2,7 @@ package com.yurii.integration;
 
 import com.yurii.util.HibernateTestUtil;
 import com.yurii.util.TestDataImporter;
+import java.lang.reflect.Proxy;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -12,19 +13,21 @@ import org.junit.jupiter.api.BeforeEach;
 public abstract class IntegrationTestBase {
 
   private static SessionFactory sessionFactory;
-  protected Session session;
+  public static Session session;
   protected Transaction transaction;
 
 
   @BeforeAll
   static void setUpSessionFactory() {
     sessionFactory = HibernateTestUtil.buildSessionFactory();
+    session = (Session) Proxy.newProxyInstance(SessionFactory.class.getClassLoader(),
+        new Class[]{Session.class},
+        (proxy, method, args1) -> method.invoke(sessionFactory.getCurrentSession(), args1));
     TestDataImporter.importTestData(sessionFactory);
   }
 
   @BeforeEach
   void startTransaction() {
-    session = sessionFactory.openSession();
     session.beginTransaction();
   }
 

@@ -2,7 +2,6 @@ package com.yurii.repository;
 
 import static com.yurii.entity.Role.*;
 
-import com.yurii.dao.PostRepository;
 import com.yurii.entity.Post;
 import com.yurii.entity.User;
 import com.yurii.integration.IntegrationTestBase;
@@ -46,7 +45,7 @@ class PostRepositoryTest extends IntegrationTestBase {
     post.setUser(user);
     postRepository.save(post);
     session.flush();
-    postRepository.delete(post.getId());
+    postRepository.delete(post);
     session.flush();
 
     Optional<Post> foundPost = postRepository.findById(post.getId());
@@ -87,7 +86,6 @@ class PostRepositoryTest extends IntegrationTestBase {
   void findAll_shouldReturnMultiplePosts() {
     List<Post> posts = postRepository.findAll();
 
-    Assertions.assertFalse(posts.isEmpty());
     Assertions.assertEquals(4, posts.size());
   }
 

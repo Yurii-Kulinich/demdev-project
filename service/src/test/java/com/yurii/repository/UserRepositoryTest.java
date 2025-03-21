@@ -1,7 +1,6 @@
 package com.yurii.repository;
 
 
-import com.yurii.dao.UserRepository;
 import com.yurii.entity.Role;
 import com.yurii.entity.User;
 import com.yurii.integration.IntegrationTestBase;
@@ -40,7 +39,7 @@ class UserRepositoryTest extends IntegrationTestBase {
     User user = getUser("john@example.com");
     userRepository.save(user);
     session.flush();
-    userRepository.delete(user.getId());
+    userRepository.delete(user);
     session.flush();
 
     Optional<User> foundUser = userRepository.findById(user.getId());
@@ -80,7 +79,7 @@ class UserRepositoryTest extends IntegrationTestBase {
     List<User> users = userRepository.findAll();
 
     Assertions.assertFalse(users.isEmpty());
-    Assertions.assertTrue(users.size() >= 5);
+    Assertions.assertTrue(users.size() == 5);
   }
 
   private static User getUser(String email) {

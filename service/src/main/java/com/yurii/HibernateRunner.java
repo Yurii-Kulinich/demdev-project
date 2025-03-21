@@ -1,7 +1,10 @@
 package com.yurii;
 
-import com.yurii.dao.UserRepository;
+import com.yurii.entity.Role;
+import com.yurii.entity.User;
+import com.yurii.repository.UserRepository;
 import java.lang.reflect.Proxy;
+import java.time.LocalDate;
 import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,10 +25,24 @@ public class HibernateRunner {
 
       session.beginTransaction();
       var userRepository = new UserRepository(session);
-//      userRepository.findAll().forEach(System.out::println);
-      userRepository.delete(UUID.fromString("e48f4db2-6ac6-42f5-97b3-941dacbb9026"));
+      User user1 = getUser("John", "Doe", "john@example.com");
+      userRepository.save(user1);
+      session.flush();
+      userRepository.delete(user1);
       session.getTransaction().commit();
     }
+
+  }
+
+  private static User getUser(String firstName, String lastName, String email) {
+    return User.builder()
+        .password("testPass")
+        .firstName(firstName)
+        .lastName(lastName)
+        .email(email)
+        .role(Role.USER)
+        .birthDate(LocalDate.of(1995, 5, 15))
+        .build();
 
   }
 

@@ -1,6 +1,7 @@
 package com.yurii.repository;
 
-import com.yurii.dao.FriendshipRepository;
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.yurii.entity.Friendship;
 import com.yurii.entity.Role;
 import com.yurii.entity.Status;
@@ -38,7 +39,7 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
 
     Optional<Friendship> foundFriendship = friendshipRepository.findById(friendship.getId());
 
-    Assertions.assertTrue(foundFriendship.isPresent());
+    assertTrue(foundFriendship.isPresent());
   }
 
   @Test
@@ -46,12 +47,12 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
     Friendship friendship = getFriendship(user, friend);
     friendshipRepository.save(friendship);
     session.flush();
-    friendshipRepository.delete(friendship.getId());
+    friendshipRepository.delete(friendship);
     session.flush();
 
     Optional<Friendship> foundFriendship = friendshipRepository.findById(friendship.getId());
 
-    Assertions.assertTrue(foundFriendship.isEmpty());
+    assertTrue(foundFriendship.isEmpty());
   }
 
   @Test
@@ -62,11 +63,12 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
     friendship.setStatus(Status.CONFIRMED);
     friendshipRepository.update(friendship);
     session.flush();
+    session.clear();
 
     Optional<Friendship> foundFriendship = friendshipRepository.findById(friendship.getId());
 
-    Assertions.assertTrue(foundFriendship.isPresent());
-    Assertions.assertEquals(Status.CONFIRMED, foundFriendship.get().getStatus());
+    assertTrue(foundFriendship.isPresent());
+    assertEquals(Status.CONFIRMED, foundFriendship.get().getStatus());
   }
 
   @Test
@@ -77,15 +79,15 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
 
     Optional<Friendship> foundFriendship = friendshipRepository.findById(savedFriendship.getId());
 
-    Assertions.assertTrue(foundFriendship.isPresent());
+    assertTrue(foundFriendship.isPresent());
   }
 
   @Test
   void findAll_shouldReturnMultipleFriendships() {
     List<Friendship> friendships = friendshipRepository.findAll();
 
-    Assertions.assertFalse(friendships.isEmpty());
-    Assertions.assertTrue(friendships.size() >= 5);
+    assertFalse(friendships.isEmpty());
+    assertTrue(friendships.size() >= 5);
   }
 
   private static User getUser(String email) {

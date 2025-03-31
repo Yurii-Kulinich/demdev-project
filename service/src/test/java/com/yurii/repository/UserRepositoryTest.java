@@ -1,32 +1,38 @@
 package com.yurii.repository;
 
 
+import com.yurii.TestApplicationRunner;
 import com.yurii.entity.Role;
 import com.yurii.entity.User;
-import com.yurii.integration.IntegrationTestBase;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-class UserRepositoryTest extends IntegrationTestBase {
+@SpringBootTest(classes = TestApplicationRunner.class)
+@ExtendWith(SpringExtension.class)
+@Transactional
+class UserRepositoryTest {
 
+  @Autowired
   private UserRepository userRepository;
-
-  @BeforeEach
-  void init() {
-    userRepository = new UserRepository(session);
-  }
+  @Autowired
+  private EntityManager entityManager;
 
   @Test
   void save_shouldPersistUser() {
     User user = getUser("john@example.com");
     userRepository.save(user);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<User> foundUser = userRepository.findById(user.getId());
 
@@ -38,9 +44,9 @@ class UserRepositoryTest extends IntegrationTestBase {
   void delete_shouldRemoveUser() {
     User user = getUser("john@example.com");
     userRepository.save(user);
-    session.flush();
+    entityManager.flush();
     userRepository.delete(user);
-    session.flush();
+    entityManager.flush();
 
     Optional<User> foundUser = userRepository.findById(user.getId());
 
@@ -51,10 +57,10 @@ class UserRepositoryTest extends IntegrationTestBase {
   void update_shouldModifyExistingUser() {
     User user = getUser("john@example.com");
     userRepository.save(user);
-    session.flush();
+    entityManager.flush();
     user.setFirstName("UpdatedUser");
     userRepository.update(user);
-    session.flush();
+    entityManager.flush();
 
     Optional<User> foundUser = userRepository.findById(user.getId());
 
@@ -66,7 +72,7 @@ class UserRepositoryTest extends IntegrationTestBase {
   void findById_shouldReturnExistingUser() {
     User user = getUser("john@example.com");
     var savedUser = userRepository.save(user);
-    session.flush();
+    entityManager.flush();
 
     Optional<User> foundUser = userRepository.findById(savedUser.getId());
 
@@ -79,7 +85,7 @@ class UserRepositoryTest extends IntegrationTestBase {
     List<User> users = userRepository.findAll();
 
     Assertions.assertFalse(users.isEmpty());
-    Assertions.assertTrue(users.size() == 5);
+    Assertions.assertEquals(users.size(), 5);
   }
 
   private static User getUser(String email) {

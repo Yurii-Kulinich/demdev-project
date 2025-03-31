@@ -1,10 +1,11 @@
 package com.yurii.repository;
 
-import static com.yurii.entity.Role.*;
+import static com.yurii.entity.Role.USER;
 
+import com.yurii.TestApplicationRunner;
 import com.yurii.entity.Post;
 import com.yurii.entity.User;
-import com.yurii.integration.IntegrationTestBase;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,18 +13,28 @@ import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-class PostRepositoryTest extends IntegrationTestBase {
+@SpringBootTest(classes = TestApplicationRunner.class)
+@ExtendWith(SpringExtension.class)
+@Transactional
+class PostRepositoryTest {
 
+  @Autowired
   private PostRepository postRepository;
+  @Autowired
+  private EntityManager entityManager;
   private User user;
 
   @BeforeEach
   void init() {
-    postRepository = new PostRepository(session);
     user = getUser("user@example.com");
-    session.persist(user);
-    session.flush();
+    entityManager.persist(user);
+    entityManager.flush();
   }
 
   @Test
@@ -31,7 +42,7 @@ class PostRepositoryTest extends IntegrationTestBase {
     Post post = getPost(user, "Post Title", "This is the text of the post.");
     post.setUser(user);
     postRepository.save(post);
-    session.flush();
+    entityManager.flush();
 
     Optional<Post> foundPost = postRepository.findById(post.getId());
 
@@ -44,9 +55,9 @@ class PostRepositoryTest extends IntegrationTestBase {
     Post post = getPost(user, "Post Title", "This is the text of the post.");
     post.setUser(user);
     postRepository.save(post);
-    session.flush();
+    entityManager.flush();
     postRepository.delete(post);
-    session.flush();
+    entityManager.flush();
 
     Optional<Post> foundPost = postRepository.findById(post.getId());
 
@@ -55,13 +66,13 @@ class PostRepositoryTest extends IntegrationTestBase {
 
   @Test
   void update_shouldModifyExistingPost() {
-    Post post = getPost(user,"Post Title", "This is the text of the post.");
+    Post post = getPost(user, "Post Title", "This is the text of the post.");
     post.setUser(user);
     postRepository.save(post);
-    session.flush();
+    entityManager.flush();
     post.setTitle("Updated Post Title");
     postRepository.update(post);
-    session.flush();
+    entityManager.flush();
 
     Optional<Post> foundPost = postRepository.findById(post.getId());
 
@@ -74,7 +85,7 @@ class PostRepositoryTest extends IntegrationTestBase {
     Post post = getPost(user, "Post Title", "This is the text of the post.");
     post.setUser(user);
     postRepository.save(post);
-    session.flush();
+    entityManager.flush();
 
     Optional<Post> foundPost = postRepository.findById(post.getId());
 

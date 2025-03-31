@@ -4,42 +4,43 @@ import jakarta.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+//@AllArgsConstructor
+@RequiredArgsConstructor
 public abstract class RepositoryBase<K extends Serializable, E> implements Repository<K, E> {
 
   private final Class<E> clazz;
-  private final EntityManager entityManager;
+  private final EntityManager em;
 
   @Override
   public E save(E entity) {
-    entityManager.persist(entity);
+    em.persist(entity);
     return entity;
   }
 
   @Override
   public void delete(E entity) {
     if (entity != null) {
-      entityManager.remove(entity);
+      em.remove(entity);
     }
   }
 
   @Override
   public void update(E entity) {
-    entityManager.merge(entity);
+    em.merge(entity);
   }
 
   @Override
   public Optional<E> findById(K id) {
-    return Optional.ofNullable(entityManager.find(clazz, id));
+    return Optional.ofNullable(em.find(clazz, id));
   }
 
   @Override
   public List<E> findAll() {
-    var criteria = entityManager.getCriteriaBuilder().createQuery(clazz);
+    var criteria = em.getCriteriaBuilder().createQuery(clazz);
     criteria.from(clazz);
-    return entityManager.createQuery(criteria)
+    return em.createQuery(criteria)
         .getResultList();
   }
 }

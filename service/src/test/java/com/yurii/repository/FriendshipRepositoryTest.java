@@ -1,41 +1,51 @@
 package com.yurii.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.yurii.TestApplicationRunner;
 import com.yurii.entity.Friendship;
 import com.yurii.entity.Role;
 import com.yurii.entity.Status;
 import com.yurii.entity.User;
-import com.yurii.integration.IntegrationTestBase;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-class FriendshipRepositoryTest extends IntegrationTestBase {
+@SpringBootTest(classes = TestApplicationRunner.class)
+@ExtendWith(SpringExtension.class)
+@Transactional
+class FriendshipRepositoryTest {
+
+  @Autowired
   private FriendshipRepository friendshipRepository;
+  @Autowired
+  private EntityManager entityManager;
   private User user;
   private User friend;
 
   @BeforeEach
   void init() {
-    friendshipRepository = new FriendshipRepository(session);
-    user = getUser("user1@example.com");
-    friend = getUser("user2@example.com");
-
-    session.persist(user);
-    session.persist(friend);
-    session.flush();
+    user = createAndPersistUser("user1@example.com");
+    friend = createAndPersistUser("user2@example.com");
+    entityManager.flush();
   }
 
   @Test
   void save_shouldPersistFriendship() {
-    Friendship friendship = getFriendship(user, friend);
+    Friendship friendship = createAndPersistFriendship(user, friend);
     friendshipRepository.save(friendship);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Friendship> foundFriendship = friendshipRepository.findById(friendship.getId());
 
@@ -44,11 +54,11 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
 
   @Test
   void delete_shouldRemoveFriendship() {
-    Friendship friendship = getFriendship(user, friend);
+    Friendship friendship = createAndPersistFriendship(user, friend);
     friendshipRepository.save(friendship);
-    session.flush();
+    entityManager.flush();
     friendshipRepository.delete(friendship);
-    session.flush();
+    entityManager.flush();
 
     Optional<Friendship> foundFriendship = friendshipRepository.findById(friendship.getId());
 
@@ -57,13 +67,13 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
 
   @Test
   void update_shouldModifyExistingFriendship() {
-    Friendship friendship = getFriendship(user, friend);
+    Friendship friendship = createAndPersistFriendship(user, friend);
     friendshipRepository.save(friendship);
-    session.flush();
+    entityManager.flush();
     friendship.setStatus(Status.CONFIRMED);
     friendshipRepository.update(friendship);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Friendship> foundFriendship = friendshipRepository.findById(friendship.getId());
 
@@ -73,9 +83,9 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
 
   @Test
   void findById_shouldReturnExistingFriendship() {
-    Friendship friendship = getFriendship(user, friend);
+    Friendship friendship = createAndPersistFriendship(user, friend);
     var savedFriendship = friendshipRepository.save(friendship);
-    session.flush();
+    entityManager.flush();
 
     Optional<Friendship> foundFriendship = friendshipRepository.findById(savedFriendship.getId());
 
@@ -90,8 +100,8 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
     assertTrue(friendships.size() >= 5);
   }
 
-  private static User getUser(String email) {
-    return User.builder()
+  private User createAndPersistUser(String email) {
+    User user = User.builder()
         .password("testPass")
         .firstName("TestName")
         .lastName("TestLast")
@@ -101,14 +111,26 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
         .createdAt(Instant.now())
         .updatedAt(Instant.now())
         .build();
+
+    entityManager.persist(user);
+    return user;
   }
 
-  private static Friendship getFriendship(User user, User friend) {
+  private Friendship createFriendship(User user, User friend) {
     return Friendship.builder()
         .user(user)
         .friend(friend)
         .createdAt(Instant.now())
         .updatedAt(Instant.now())
+        .status(Status.CONFIRMED)
         .build();
+  }
+
+  private Friendship createAndPersistFriendship(User user, User friend) {
+    Friendship friendship = createFriendship(user, friend);
+
+    entityManager.persist(friendship);
+
+    return friendship;
   }
 }

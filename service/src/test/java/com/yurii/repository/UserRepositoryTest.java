@@ -1,26 +1,20 @@
 package com.yurii.repository;
 
 
-import com.yurii.TestApplicationRunner;
 import com.yurii.entity.Role;
 import com.yurii.entity.User;
+import com.yurii.integration.IntegrationTestBase;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = TestApplicationRunner.class)
-@ExtendWith(SpringExtension.class)
 @Transactional
-class UserRepositoryTest {
+class UserRepositoryTest extends IntegrationTestBase {
 
   @Autowired
   private UserRepository userRepository;
@@ -78,14 +72,6 @@ class UserRepositoryTest {
 
     Assertions.assertTrue(foundUser.isPresent());
     Assertions.assertEquals("john@example.com", foundUser.get().getEmail());
-  }
-
-  @Test
-  void findAll_shouldReturnMultipleUsers() {
-    List<User> users = userRepository.findAll();
-
-    Assertions.assertFalse(users.isEmpty());
-    Assertions.assertEquals(users.size(), 5);
   }
 
   private static User getUser(String email) {

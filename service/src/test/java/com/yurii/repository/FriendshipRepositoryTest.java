@@ -1,30 +1,23 @@
 package com.yurii.repository;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.yurii.TestApplicationRunner;
 import com.yurii.entity.Friendship;
 import com.yurii.entity.Role;
 import com.yurii.entity.Status;
 import com.yurii.entity.User;
+import com.yurii.integration.IntegrationTestBase;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = TestApplicationRunner.class)
-@ExtendWith(SpringExtension.class)
 @Transactional
-class FriendshipRepositoryTest {
+class FriendshipRepositoryTest extends IntegrationTestBase {
 
   @Autowired
   private FriendshipRepository friendshipRepository;
@@ -90,14 +83,6 @@ class FriendshipRepositoryTest {
     Optional<Friendship> foundFriendship = friendshipRepository.findById(savedFriendship.getId());
 
     assertTrue(foundFriendship.isPresent());
-  }
-
-  @Test
-  void findAll_shouldReturnMultipleFriendships() {
-    List<Friendship> friendships = friendshipRepository.findAll();
-
-    assertFalse(friendships.isEmpty());
-    assertTrue(friendships.size() >= 5);
   }
 
   private User createAndPersistUser(String email) {

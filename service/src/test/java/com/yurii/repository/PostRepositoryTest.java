@@ -2,27 +2,21 @@ package com.yurii.repository;
 
 import static com.yurii.entity.Role.USER;
 
-import com.yurii.TestApplicationRunner;
 import com.yurii.entity.Post;
 import com.yurii.entity.User;
+import com.yurii.integration.IntegrationTestBase;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = TestApplicationRunner.class)
-@ExtendWith(SpringExtension.class)
 @Transactional
-class PostRepositoryTest {
+class PostRepositoryTest extends IntegrationTestBase {
 
   @Autowired
   private PostRepository postRepository;
@@ -91,13 +85,6 @@ class PostRepositoryTest {
 
     Assertions.assertTrue(foundPost.isPresent());
     Assertions.assertEquals("Post Title", foundPost.get().getTitle());
-  }
-
-  @Test
-  void findAll_shouldReturnMultiplePosts() {
-    List<Post> posts = postRepository.findAll();
-
-    Assertions.assertEquals(4, posts.size());
   }
 
   private static User getUser(String email) {

@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +25,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = "email")
+@EqualsAndHashCode(of = "email", callSuper = false)
 @ToString(exclude = {"initiatedFriendships", "friendshipsAsFriend", "posts", "comments", "likes"})
 @Table(name = "users")
-public class User {
+public class User extends AuditingEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -62,10 +61,7 @@ public class User {
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   List<Like> likes = new ArrayList<>();
 
-
   private LocalDate birthDate;
-  private Instant createdAt;
-  private Instant updatedAt;
 
   public void addPost(Post post) {
     posts.add(post);
@@ -78,13 +74,13 @@ public class User {
   }
 
   public void addInitiatedFriendship(Friendship friendship) {
-      initiatedFriendships.add(friendship);
-      friendship.setUser(this);
+    initiatedFriendships.add(friendship);
+    friendship.setUser(this);
   }
 
   public void addFriendshipAsFriend(Friendship friendship) {
-      friendshipsAsFriend.add(friendship);
-      friendship.setFriend(this);
+    friendshipsAsFriend.add(friendship);
+    friendship.setFriend(this);
   }
 
   public void addLike(Like like) {

@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.Instant;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,10 +21,10 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString(exclude = {"user", "friend"})
 @Builder
-public class Friendship {
+public class Friendship extends AuditingEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -41,8 +40,6 @@ public class Friendship {
 
   @Enumerated(EnumType.STRING)
   private Status status;
-  private Instant createdAt;
-  private Instant updatedAt;
 
   public void setUser(User user) {
     this.user = user;

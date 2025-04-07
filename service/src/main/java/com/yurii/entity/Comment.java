@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import java.time.Instant;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,11 +17,11 @@ import lombok.ToString;
 @Entity
 @Data
 @ToString(exclude = {"user", "post"})
-@EqualsAndHashCode()
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Comment {
+public class Comment extends AuditingEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,7 +34,5 @@ public class Comment {
   private User user;
 
   private String text;
-  private Instant createdAt;
-  private Instant updatedAt;
 
 }

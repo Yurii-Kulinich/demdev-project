@@ -28,11 +28,17 @@
     <hibernate.version>6.2.1.Final</hibernate.version>
     <postgresql.version>42.7.2</postgresql.version>
     <postgresql.testcontainers.version>1.20.4</postgresql.testcontainers.version>
+    <liquibase.version>4.31.1</liquibase.version>
 
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-core</artifactId>
+        <version>${liquibase.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>

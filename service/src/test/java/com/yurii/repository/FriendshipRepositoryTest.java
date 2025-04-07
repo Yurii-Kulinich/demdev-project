@@ -9,7 +9,6 @@ import com.yurii.entity.Status;
 import com.yurii.entity.User;
 import com.yurii.integration.IntegrationTestBase;
 import jakarta.persistence.EntityManager;
-import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,7 +63,6 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
     friendshipRepository.save(friendship);
     entityManager.flush();
     friendship.setStatus(Status.CONFIRMED);
-    friendshipRepository.update(friendship);
     entityManager.flush();
     entityManager.clear();
 
@@ -86,27 +84,23 @@ class FriendshipRepositoryTest extends IntegrationTestBase {
   }
 
   private User createAndPersistUser(String email) {
-    User user = User.builder()
+    User getUser = User.builder()
         .password("testPass")
         .firstName("TestName")
         .lastName("TestLast")
         .email(email)
         .role(Role.USER)
         .birthDate(java.time.LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
         .build();
 
-    entityManager.persist(user);
-    return user;
+    entityManager.persist(getUser);
+    return getUser;
   }
 
   private Friendship createFriendship(User user, User friend) {
     return Friendship.builder()
         .user(user)
         .friend(friend)
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
         .status(Status.CONFIRMED)
         .build();
   }

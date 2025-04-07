@@ -1,14 +1,9 @@
 package com.yurii.repository;
 
 import com.yurii.entity.Post;
-import jakarta.persistence.EntityManager;
 import java.util.UUID;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public class PostRepository extends RepositoryBase<UUID, Post> {
+public interface PostRepository extends JpaRepository<Post, UUID>, CustomRepository<UUID, Post> {
 
-  public PostRepository(EntityManager em) {
-    super(Post.class, em);
-  }
 }

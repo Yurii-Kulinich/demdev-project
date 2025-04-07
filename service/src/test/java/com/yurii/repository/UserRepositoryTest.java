@@ -1,12 +1,16 @@
 package com.yurii.repository;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.yurii.entity.Role;
 import com.yurii.entity.User;
 import com.yurii.integration.IntegrationTestBase;
 import jakarta.persistence.EntityManager;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +34,7 @@ class UserRepositoryTest extends IntegrationTestBase {
 
     Optional<User> foundUser = userRepository.findById(user.getId());
 
-    Assertions.assertTrue(foundUser.isPresent());
+    assertTrue(foundUser.isPresent());
     Assertions.assertEquals("john@example.com", foundUser.get().getEmail());
   }
 
@@ -44,7 +48,7 @@ class UserRepositoryTest extends IntegrationTestBase {
 
     Optional<User> foundUser = userRepository.findById(user.getId());
 
-    Assertions.assertTrue(foundUser.isEmpty());
+    assertTrue(foundUser.isEmpty());
   }
 
   @Test
@@ -53,12 +57,11 @@ class UserRepositoryTest extends IntegrationTestBase {
     userRepository.save(user);
     entityManager.flush();
     user.setFirstName("UpdatedUser");
-    userRepository.update(user);
     entityManager.flush();
-
+    System.out.println();
     Optional<User> foundUser = userRepository.findById(user.getId());
 
-    Assertions.assertTrue(foundUser.isPresent());
+    assertTrue(foundUser.isPresent());
     Assertions.assertEquals("UpdatedUser", foundUser.get().getFirstName());
   }
 
@@ -70,8 +73,22 @@ class UserRepositoryTest extends IntegrationTestBase {
 
     Optional<User> foundUser = userRepository.findById(savedUser.getId());
 
-    Assertions.assertTrue(foundUser.isPresent());
+    assertTrue(foundUser.isPresent());
     Assertions.assertEquals("john@example.com", foundUser.get().getEmail());
+  }
+
+  @Test
+  void testFindAllByCriteria() {
+    User user1 = getUser("alice@example.com");
+    User user2 = getUser("bob@example.com");
+    userRepository.save(user1);
+    userRepository.save(user2);
+
+    List<User> users = userRepository.findAllByCriteria();
+
+    assertEquals(2, users.size());
+    assertThat(users).extracting(User::getEmail)
+        .containsExactlyInAnyOrder("alice@example.com", "bob@example.com");
   }
 
   private static User getUser(String email) {
@@ -82,8 +99,6 @@ class UserRepositoryTest extends IntegrationTestBase {
         .email(email)
         .role(Role.USER)
         .birthDate(LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
         .build();
   }
 

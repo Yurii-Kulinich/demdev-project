@@ -6,7 +6,6 @@ import com.yurii.entity.Post;
 import com.yurii.entity.User;
 import com.yurii.integration.IntegrationTestBase;
 import jakarta.persistence.EntityManager;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -65,7 +64,6 @@ class PostRepositoryTest extends IntegrationTestBase {
     postRepository.save(post);
     entityManager.flush();
     post.setTitle("Updated Post Title");
-    postRepository.update(post);
     entityManager.flush();
 
     Optional<Post> foundPost = postRepository.findById(post.getId());
@@ -95,8 +93,6 @@ class PostRepositoryTest extends IntegrationTestBase {
         .email(email)
         .role(USER)
         .birthDate(LocalDate.of(1995, 5, 15))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
         .build();
   }
 
@@ -106,9 +102,7 @@ class PostRepositoryTest extends IntegrationTestBase {
         .title(title)
         .text(text)
         .postPicture("pictureUrl")
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .user(null) // Set the user later
+        .user(null)
         .build();
   }
 

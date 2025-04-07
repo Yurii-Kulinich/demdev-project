@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.Instant;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,12 +18,12 @@ import lombok.ToString;
 @Entity
 @Data
 @ToString(exclude = {"user", "post"})
-@EqualsAndHashCode()
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Table(name = "likes")
-public class Like {
+public class Like extends AuditingEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,6 +33,5 @@ public class Like {
   private User user;
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private Post post;
-  private Instant createdAt;
 
 }

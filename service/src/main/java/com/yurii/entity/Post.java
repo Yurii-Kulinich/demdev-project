@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,10 +24,10 @@ import lombok.ToString;
 @ToString(exclude = {"user", "likes", "comments"})
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"likes", "comments"})
+@EqualsAndHashCode(exclude = {"likes", "comments"}, callSuper = false)
 @Builder
 @Table(name = "post")
-public class Post {
+public class Post extends AuditingEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,8 +35,6 @@ public class Post {
   private String title;
   private String text;
   private String postPicture;
-  private Instant createdAt;
-  private Instant updatedAt;
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private User user;

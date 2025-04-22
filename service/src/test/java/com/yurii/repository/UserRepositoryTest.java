@@ -58,7 +58,6 @@ class UserRepositoryTest extends IntegrationTestBase {
     entityManager.flush();
     user.setFirstName("UpdatedUser");
     entityManager.flush();
-    System.out.println();
     Optional<User> foundUser = userRepository.findById(user.getId());
 
     assertTrue(foundUser.isPresent());

@@ -101,7 +101,7 @@ class PostRepositoryTest extends IntegrationTestBase {
         .user(user)
         .title(title)
         .text(text)
-        .postPicture("pictureUrl1")
+        .postPicture("pictureUrl11")
         .user(null)
         .build();
   }
